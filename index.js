@@ -3,10 +3,10 @@ const GATEWAY_API = '';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const map = new mapboxgl.Map({
-    container: 'map', // Specify the container ID
-    style: 'mapbox://styles/mapbox/dark-v10', // Specify which map style to use
-    center: [ 30.52428, 50.45056 ], // Specify the starting position
-    zoom: 10.5 // Specify the starting zoom
+    container: 'map',
+    style: 'mapbox://styles/mapbox/dark-v10',
+    center: [ 30.52428, 50.45056 ],
+    zoom: 10.5
 });
 
 let allStreets = [];
@@ -28,13 +28,30 @@ function addSuggestions() {
     const searchInput = document.getElementById("search");
     const suggestionsList = document.getElementById("suggestions");
 
-    const options = allStreets.map(street => (
-        ` <option value=${street.id}>${street.name}</option>`
-    )).join("");
+    let currentNamesSuggestions = [];
+    let formerNamesSuggestions = [];
+    let allSuggestions = [];
+
+    allStreets.forEach(street => {
+        const currentStreetOption = `<option value=${street.id}>${street.name}</option>`;
+        currentNamesSuggestions.push(currentStreetOption);
+        const formerNames = street.formerNamesInfo.map(formerNameInfo => {
+            if (formerNameInfo.formerName !== street.name) {
+                let text = (formerNameInfo.formerName + " (теп. " + street.name + ")");
+                return `<option value=${street.id}>${text}</option>`
+            }
+        }).join("");
+        formerNamesSuggestions = formerNamesSuggestions.concat(formerNames);
+    });
+
+    allSuggestions = currentNamesSuggestions.concat(formerNamesSuggestions).join("");
+
+    const options = allSuggestions;
 
     suggestionsList.innerHTML = `
     ${options}
     `
+
     searchInput.onselect = function (e) {
         e.currentTarget.select();
     }
@@ -45,7 +62,7 @@ function addSuggestions() {
         }
         for (let option of suggestionsList.options) {
             option.onclick = function () {
-                searchInput.value = option.innerHTML;
+                searchInput.value = allStreets.find(street => street.id === option.value).name;
                 showWholeStreetAndInfoAbout(option.value);
                 suggestionsList.style.display = 'none';
             }
@@ -56,16 +73,22 @@ function addSuggestions() {
 
     searchInput.oninput = function () {
         currentSuggestions = [];
-        const text = searchInput.value.toLowerCase();
-        if (text.length >= 2) {
+        const inputString = searchInput.value.toLowerCase();
+        if (inputString.length >= 2) {
             suggestionsList.style.display = 'block';
             for (let option of suggestionsList.options) {
-                if (option.innerHTML.toLowerCase().indexOf(text) > -1) {
-                    currentSuggestions.push(option);
-                    makeSuggestionActive(currentSuggestions, 0);
-                    option.style.display = "block";
-                } else {
-                    option.style.display = "none";
+                const regex = /[(].*/gm;
+                const streetFullName = option.innerHTML.toLowerCase().replaceAll(regex, "").replaceAll("\\s+", " ").trim();
+                const splittedWords = streetFullName.split(" ").filter(word => word.length > 0);
+                for (const word of splittedWords) {
+                    if (word.startsWith(inputString)) {
+                        currentSuggestions.push(option);
+                        makeSuggestionActive(currentSuggestions, 0);
+                        option.style.display = "block";
+                        break;
+                    } else {
+                        option.style.display = "none";
+                    }
                 }
             }
         } else {
