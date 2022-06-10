@@ -274,9 +274,31 @@ function showStreet() {
         map.removeLayer('selectedStreet');
         map.removeSource('selectedStreet');
     }
+    let type = "line";
+    let color = "#03AA46";
+    let layout = {
+        'line-join': 'round',
+        'line-cap': 'round'
+    }
+    let paint = {
+        'line-color': color,
+        'line-width': 8,
+        'line-opacity': 0.8
+    };
+    if (selectedStreet.type) {
+        if (selectedStreet.type === "SQUARE") {
+            type = "fill";
+            color = "#f04f4f";
+            layout = {}
+            paint = {
+                'fill-color': color,
+                'fill-opacity': 0.8
+            }
+        }
+    }
     map.addLayer({
         'id': 'selectedStreet',
-        'type': 'line',
+        'type': type,
         'source': {
             'type': 'geojson',
             'data': {
@@ -285,15 +307,8 @@ function showStreet() {
                 'geometry': {coordinates: selectedStreet.coords, type: "LineString"}
             }
         },
-        'layout': {
-            'line-join': 'round',
-            'line-cap': 'round'
-        },
-        'paint': {
-            'line-color': '#03AA46',
-            'line-width': 8,
-            'line-opacity': 0.8
-        }
+        'layout': layout,
+        'paint': paint
     });
 }
 
