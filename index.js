@@ -165,12 +165,19 @@ function showWholeStreetAndInfoAbout(streetId) {
 
     const zoomCenter = {...selectedStreet.centerCoords};
 
-    zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+
+    let zoom = 12;
+    if (selectedStreet.type && selectedStreet.type === "SQUARE") {
+        zoom = 13;
+        zoomCenter.lng -= 0.02 * window.innerWidth / 1500;
+    } else {
+        zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+    }
 
 
     map.flyTo({
         center: zoomCenter,
-        zoom: 12,
+        zoom,
         bearing: 0,
         speed: 0.7,
         curve: 1,
@@ -222,7 +229,15 @@ function toggleVisibility(event) {
 function showAllStreetsCenterMarker() {
     if (allStreets && allStreets.length > 0) {
         allStreets.forEach(street => {
-            const marker = new mapboxgl.Marker();
+            let color = "#3FB1CE";
+            if (street.type) {
+                if (street.type === "SQUARE") {
+                    color = "#ff0000"
+                }
+            }
+            const marker = new mapboxgl.Marker({
+                color
+            });
             const infoPopup = new mapboxgl.Popup({offset: 25}).setText(street.name);
             marker
                 .setLngLat(street.centerCoords)
