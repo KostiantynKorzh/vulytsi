@@ -79,6 +79,7 @@
 
         ::-webkit-scrollbar {
             width: 10px;
+            background-color: #625e5e;
         }
 
         ::-webkit-scrollbar-thumb {
@@ -160,6 +161,7 @@
         }
 
         .shown-text {
+            white-space: pre-line;
             visibility: visible;
             opacity: 1;
             max-height: none;
@@ -188,6 +190,10 @@
             border-top: none;
             /*font-family: sans-serif;*/
             width: 100%;
+            padding-right: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+            overflow-x: hidden;
             /*padding: 5px;*/
         }
 
@@ -231,7 +237,7 @@
 <body>
 <div id="map"></div>
 <div id="searchbox">
-    <input autocomplete="off" id="search" type="text" placeholder="Шукати за назвою...">
+    <input autocomplete="off" id="search" type="text">
     <datalist id="suggestions">
     </datalist>
 </div>

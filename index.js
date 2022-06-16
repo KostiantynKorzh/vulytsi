@@ -32,6 +32,13 @@ function addSuggestions() {
     let formerNamesSuggestions = [];
     let allSuggestions = [];
 
+    const allStreetsSize = allStreets.length;
+    let searchPlaceholderText = "Шукати серед " + allStreetsSize;
+    searchPlaceholderText += " вулиць";
+    searchPlaceholderText += "...";
+
+    searchInput.setAttribute("placeholder", searchPlaceholderText);
+
     allStreets.forEach(street => {
         const currentStreetOption = `<option value=${street.id}>${street.name}</option>`;
         currentNamesSuggestions.push(currentStreetOption);
@@ -54,6 +61,12 @@ function addSuggestions() {
 
     searchInput.onselect = function (e) {
         e.currentTarget.select();
+    }
+
+    searchInput.onblur = function (e) {
+        setTimeout(() => {
+            suggestionsList.style.display = 'none';
+        }, 100);
     }
 
     searchInput.onfocus = function (e) {
@@ -125,6 +138,7 @@ function addSuggestions() {
             }
         }
     }
+
 }
 
 function makeSuggestionActive(currentSuggestions, currentFocus) {
