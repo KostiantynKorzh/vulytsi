@@ -166,15 +166,39 @@ function showWholeStreetAndInfoAbout(streetId) {
              </li>`
     )).join("");
 
+    let tags = '';
+    if (selectedStreet.tags && selectedStreet.tags.length > 0) {
+        const mappedTags = selectedStreet.tags.map(tag => {
+            if (tag === "Декомунізація") {
+                return `<img src="red_tag.png" title="Декомунізація" width="60px" style="margin-left: -25px;">`
+            } else if (tag === "Німецька окупація") {
+                return `<img src="yellow_tag.png" title="Німецька окупація" width="60px" style="margin-left: -25px;">`
+            } else if (tag === "Дерусифікація") {
+                return `<img src="blue_tag.png" title="Дерусифікація" width="60px" style="margin-left: -25px;">`
+            }
+        });
+
+        tags = `
+        <div class="tag">
+            ${mappedTags}
+        </div>
+        `
+    }
+
     infoBox.innerHTML = `
-        <ul class="progress">
-            <li class="progress__item">
-                <div class="progress__title" onclick="toggleVisibility(event)">${selectedStreet.name} ${selectedStreet.year ? "(" + selectedStreet.year + ")" : ""} ${(selectedStreet.generalInfo || selectedStreet.namedAfter) ? '</br> <p class="progress__title__more hidden-text">Більше...</p>' : ''}</div>
-                <div class="progress__info shown-text">${selectedStreet.namedAfter ? `<h3>На честь</h3>${selectedStreet.namedAfter}` : ""}</div>
-                <div class="progress__info shown-text">${selectedStreet.generalInfo ? `<h3>Загальна інформація</h3>${selectedStreet.generalInfo}` : ""}</div>
-            </li>
-            ${formerNamesPart}
-        </ul>
+        <div>
+            ${tags}
+            <div class="info">
+                <ul class="progress">
+                    <li class="progress__item">
+                        <div class="progress__title" onclick="toggleVisibility(event)">${selectedStreet.name} ${selectedStreet.year ? "(" + selectedStreet.year + ")" : ""} ${(selectedStreet.generalInfo || selectedStreet.namedAfter) ? '</br> <p class="progress__title__more hidden-text">Більше...</p>' : ''}</div>
+                        <div class="progress__info shown-text">${selectedStreet.namedAfter ? `<h3>На честь</h3>${selectedStreet.namedAfter}` : ""}</div>
+                        <div class="progress__info shown-text">${selectedStreet.generalInfo ? `<h3>Загальна інформація</h3>${selectedStreet.generalInfo}` : ""}</div>
+                    </li>
+                    ${formerNamesPart}
+                </ul>
+            </div>
+            </div>
         `;
 
     const zoomCenter = {...selectedStreet.centerCoords};
@@ -257,6 +281,7 @@ function showAllStreetsCenterMarker() {
                 .setLngLat(street.centerCoords)
                 .addTo(map);
             marker.getElement().addEventListener('click', () => {
+                document.getElementById("search").blur();
                 showWholeStreetAndInfoAbout(street.id);
             });
             marker.getElement().addEventListener('mouseover', () => {
