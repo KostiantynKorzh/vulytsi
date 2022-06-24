@@ -10,8 +10,12 @@ const map = new mapboxgl.Map({
 });
 
 let allStreets = [];
+let streetsToShow = [];
+let selectedFilteredByTypesStreets = [];
 let selectedStreet = {};
 let centerMarkers = [];
+let tags;
+let types;
 
 async function getAllStreets() {
     removeRoute();
@@ -19,6 +23,24 @@ async function getAllStreets() {
     allStreets = await fetch(GATEWAY_API + 'all-streets')
         .then(response => response.json())
         .then(response => response.Items);
+    streetsToShow = allStreets;
+    tags = new Set(allStreets.map(street => {
+        if (street.tags) {
+            return street.tags.flat();
+        }
+    }).flat().filter(tag => tag !== undefined));
+
+    types = new Set(allStreets.map(street => {
+        if (street.type) {
+            return street.type;
+        }
+    }).filter(type => type !== undefined));
+
+    tags.forEach(tag => {
+        filterByTags(tag);
+    });
+
+    selectedFilteredByTypesStreets = streetsToShow;
 
     // showAllStreets();
     showAllStreetsCenterMarker();
@@ -32,14 +54,14 @@ function addSuggestions() {
     let formerNamesSuggestions = [];
     let allSuggestions = [];
 
-    const allStreetsSize = allStreets.length;
-    let searchPlaceholderText = "Шукати серед " + allStreetsSize;
+    const streetsToShowSize = streetsToShow.length;
+    let searchPlaceholderText = "Шукати серед " + streetsToShowSize;
     searchPlaceholderText += " вулиць";
     searchPlaceholderText += "...";
 
     searchInput.setAttribute("placeholder", searchPlaceholderText);
 
-    allStreets.forEach(street => {
+    streetsToShow.forEach(street => {
         const currentStreetOption = `<option value=${street.id}>${street.name}</option>`;
         currentNamesSuggestions.push(currentStreetOption);
         const formerNames = street.formerNamesInfo.map(formerNameInfo => {
@@ -75,7 +97,7 @@ function addSuggestions() {
         }
         for (let option of suggestionsList.options) {
             option.onclick = function () {
-                searchInput.value = allStreets.find(street => street.id === option.value).name;
+                searchInput.value = streetsToShow.find(street => street.id === option.value).name;
                 showWholeStreetAndInfoAbout(option.value);
                 suggestionsList.style.display = 'none';
             }
@@ -153,7 +175,7 @@ function makeSuggestionActive(currentSuggestions, currentFocus) {
 }
 
 function showWholeStreetAndInfoAbout(streetId) {
-    selectedStreet = allStreets.find(street => street.id === streetId);
+    selectedStreet = streetsToShow.find(street => street.id === streetId);
     showStreet();
 
     const infoBox = document.getElementsByClassName('info-box')[0];
@@ -265,8 +287,11 @@ function toggleVisibility(event) {
 }
 
 function showAllStreetsCenterMarker() {
-    if (allStreets && allStreets.length > 0) {
-        allStreets.forEach(street => {
+    centerMarkers.forEach(marker => {
+        marker.remove();
+    });
+    if (streetsToShow && streetsToShow.length > 0) {
+        streetsToShow.forEach(street => {
             let color = "#3FB1CE";
             if (street.type) {
                 if (street.type === "SQUARE") {
@@ -371,6 +396,106 @@ function removeRoute() {
     map.removeLayer('selectedStreet');
     map.removeSource('selectedStreet');
 }
+
+const settings = document.getElementsByClassName("settings")[0];
+
+settings.addEventListener("click", function () {
+    this.classList.toggle("active");
+
+    const panel = this.nextElementSibling;
+    if (panel.style.display === "block") {
+        panel.style.display = "none";
+    } else {
+        panel.style.display = "block";
+    }
+});
+
+function filterStreetsType(element, type) {
+    element.addEventListener('change', (event) => {
+        if (event.currentTarget.checked) {
+            streetsToShow = streetsToShow.concat(allStreets.filter(street => {
+                if (!street.type) {
+                    return type === "STREET";
+                }
+                return street.type === type
+            }));
+            showAllStreetsCenterMarker();
+        } else {
+            streetsToShow = streetsToShow.filter(street => {
+                if (!street.type) {
+                    return type !== "STREET";
+                }
+                return street.type !== type
+            });
+            showAllStreetsCenterMarker();
+        }
+        selectedFilteredByTypesStreets = streetsToShow;
+        addSuggestions();
+    });
+}
+
+function filterByTags(tag) {
+    const element = document.getElementById(tag);
+    element.addEventListener('change', (event) => {
+        let isAllTagsUnchecked = true;
+        let isFirstChecked = true;
+        tags.forEach(currentTag => {
+            if (document.getElementById(currentTag).checked) {
+                isAllTagsUnchecked = false;
+            }
+            if (currentTag !== tag && document.getElementById(currentTag).checked) {
+                isFirstChecked = false;
+            }
+        });
+        if (event.currentTarget.checked) {
+            if (isFirstChecked) {
+                console.log(1)
+                streetsToShow = selectedFilteredByTypesStreets.filter(street => {
+                    if (street.tags) {
+                        return street.tags.includes(tag);
+                    }
+                });
+            } else {
+                streetsToShow = streetsToShow.concat(selectedFilteredByTypesStreets.filter(street => {
+                        if (street.tags) {
+                            return street.tags.includes(tag);
+                        }
+                    }
+                ))
+            }
+        } else {
+            if (isAllTagsUnchecked) {
+                let selectedTypes = [];
+                types.forEach(type => {
+                    if (document.getElementById(type).checked) {
+                        selectedTypes.push(type);
+                    }
+                });
+                streetsToShow = allStreets.filter(street => {
+                    if (street.type) {
+                        return selectedTypes.includes(street.type);
+                    }
+                    return selectedTypes.includes("STREET");
+                });
+            } else {
+                streetsToShow = streetsToShow.filter(street => {
+                    if (street.tags) {
+                        return !street.tags.includes(tag);
+                    }
+                });
+            }
+        }
+        showAllStreetsCenterMarker();
+        addSuggestions();
+    });
+}
+
+filterStreetsType(document.getElementById('STREET'), "STREET");
+filterStreetsType(document.getElementById('SQUARE'), "SQUARE");
+
+// filterByTags(document.getElementById('decom'), "Декомунізація");
+// filterByTags(document.getElementById('deutsch'), "Німецька окупація");
+// filterByTags(document.getElementById('derus'), "Дерусифікація");
 
 getAllStreets()
     .then(() => {

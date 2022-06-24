@@ -32,6 +32,7 @@
             top: 0;
             bottom: 0;
             width: 100%;
+            z-index: -1000;
         }
 
         .mapboxgl-popup-close-button {
@@ -197,7 +198,7 @@
             /*padding: 5px;*/
         }
 
-        input {
+        .search-input {
             /*margin: 20px;*/
             width: 100%;
             height: 90%;
@@ -207,7 +208,7 @@
             color: #cfcfcf;
         }
 
-        input::placeholder {
+        .search-input::placeholder {
             color: #cfcfcf;
         }
 
@@ -232,19 +233,55 @@
         }
 
         .tag {
-            /*position: relative;*/
-            /*left: 80%;*/
-            /*margin-bottom: 40px;*/
             float: right;
             position: relative;
             top: -35px;
-            /*width: 100%;*/
-            /*top: 70px;*/
-            /*margin-right: 0;*/
-            /*margin-left: auto;*/
+        }
+
+        .settings {
+            background-color: #eee;
+            color: #444;
+            cursor: pointer;
+            padding: 5px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            outline: none;
+            transition: 0.4s;
+            z-index: 2000;
+        }
+
+        .settings:hover {
+            background-color: #ccc;
+        }
+
+        .panel {
+            padding: 0 18px;
+            background-color: #454545;
+            color: #cfcfcf;
+            display: none;
+            overflow: hidden;
+            width: 350px;
+            height: 500px;
+            position: relative;
+            right: 345px;
+            z-index: 1000;
+        }
+
+        .settings_container {
             /*position: relative;*/
-            /*left: 90%;*/
-            /*margin-bottom: -50px;*/
+            width: 40px;
+            margin-left: auto;
+            margin-right: 0;
+            /*margin-right: -18px;*/
+            z-index: 2000;
+        }
+
+        .menu_stripe {
+            width: 100%;
+            height: 3px;
+            background-color: black;
+            margin: 4px 0;
         }
 
     </style>
@@ -253,9 +290,44 @@
 <body>
 <div id="map"></div>
 <div id="searchbox">
-    <input autocomplete="off" id="search" type="text">
+    <input class="search-input input-css" autocomplete="off" id="search" type="text">
     <datalist id="suggestions">
     </datalist>
+</div>
+<div class="settings_container">
+    <button class="settings">
+        <div class="menu_stripe"></div>
+        <div class="menu_stripe"></div>
+        <div class="menu_stripe"></div>
+    </button>
+    <div class="panel">
+        <div>
+            <p>Шари</p>
+            <div>
+                <input id="STREET" type="checkbox" checked>
+                <label for="STREET">Вулиці</label>
+            </div>
+            <div>
+                <input id="SQUARE" type="checkbox" checked>
+                <label for="SQUARE">Площі</label>
+            </div>
+        </div>
+        <div>
+            <p>Теги</p>
+            <div>
+                <input id="Декомунізація" type="checkbox">
+                <label for="Декомунізація">Декомунізація</label>
+            </div>
+            <div>
+                <input id="Німецька окупація" type="checkbox">
+                <label for="Німецька окупація">Німецька окупація</label>
+            </div>
+<!--            <div>-->
+<!--                <input id="Дерусифікація" type="checkbox">-->
+<!--                <label for="Дерусифікація">Дерусифікація</label>-->
+<!--            </div>-->
+        </div>
+    </div>
 </div>
 <div class="info-box hidden-div">
 </div>
