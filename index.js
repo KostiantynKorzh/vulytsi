@@ -449,7 +449,6 @@ function filterByTags(tag) {
         });
         if (event.currentTarget.checked) {
             if (isFirstChecked) {
-                console.log(1)
                 streetsToShow = selectedFilteredByTypesStreets.filter(street => {
                     if (street.tags) {
                         return street.tags.includes(tag);
