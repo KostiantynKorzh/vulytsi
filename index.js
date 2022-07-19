@@ -1,5 +1,5 @@
-const MAPBOX_ACCESS_TOKEN = '';
-const GATEWAY_API = '';
+const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1Ijoia29zdGlha29yemgiLCJhIjoiY2wzZm9lcXlnMDNoYzNjcDB5Y3JlN3VwYiJ9.kqkSD2YZjr5KNLi8us4J3Q';
+const GATEWAY_API = 'https://chabkzbykl.execute-api.eu-central-1.amazonaws.com/';
 
 mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const map = new mapboxgl.Map({
@@ -225,13 +225,24 @@ function showWholeStreetAndInfoAbout(streetId) {
 
     const zoomCenter = {...selectedStreet.centerCoords};
 
-
     let zoom = 12;
+    if (map.getZoom() >= zoom) {
+        zoom = map.getZoom();
+    }
     if (selectedStreet.type && selectedStreet.type === "SQUARE") {
-        zoom = 13;
-        zoomCenter.lng -= 0.02 * window.innerWidth / 1500;
+        if (map.getZoom() >= zoom) {
+            zoom = map.getZoom();
+            zoomCenter.lng -= 0.02 * window.innerWidth / 1500 / zoom;
+        } else {
+            zoom = 13;
+            zoomCenter.lng -= 0.02 * window.innerWidth / 1500;
+        }
     } else {
-        zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+        if (map.getZoom() >= zoom) {
+            zoomCenter.lng -= 0.035 * window.innerWidth / 1500 / zoom;
+        } else {
+            zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+        }
     }
 
 
@@ -487,6 +498,10 @@ function filterByTags(tag) {
         showAllStreetsCenterMarker();
         addSuggestions();
     });
+}
+
+function formatLinks(text) {
+
 }
 
 filterStreetsType(document.getElementById('STREET'), "STREET");
