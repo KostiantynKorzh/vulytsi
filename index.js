@@ -225,13 +225,24 @@ function showWholeStreetAndInfoAbout(streetId) {
 
     const zoomCenter = {...selectedStreet.centerCoords};
 
-
     let zoom = 12;
+    if (map.getZoom() >= zoom) {
+        zoom = map.getZoom();
+    }
     if (selectedStreet.type && selectedStreet.type === "SQUARE") {
-        zoom = 13;
-        zoomCenter.lng -= 0.02 * window.innerWidth / 1500;
+        if (map.getZoom() >= zoom) {
+            zoom = map.getZoom();
+            zoomCenter.lng -= 0.02 * window.innerWidth / 1500 / zoom;
+        } else {
+            zoom = 13;
+            zoomCenter.lng -= 0.02 * window.innerWidth / 1500;
+        }
     } else {
-        zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+        if (map.getZoom() >= zoom) {
+            zoomCenter.lng -= 0.035 * window.innerWidth / 1500 / zoom;
+        } else {
+            zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+        }
     }
 
 
@@ -487,6 +498,10 @@ function filterByTags(tag) {
         showAllStreetsCenterMarker();
         addSuggestions();
     });
+}
+
+function formatLinks(text) {
+
 }
 
 filterStreetsType(document.getElementById('STREET'), "STREET");
