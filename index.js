@@ -192,11 +192,11 @@ function showWholeStreetAndInfoAbout(streetId) {
     if (selectedStreet.tags && selectedStreet.tags.length > 0) {
         const mappedTags = selectedStreet.tags.map(tag => {
             if (tag === "Декомунізація") {
-                return `<img src="red_tag.png" title="Декомунізація" width="60px" style="margin-left: -25px;">`
+                return `<img src="icons/red_tag.png" title="Декомунізація" width="60px" style="margin-left: -25px;">`
             } else if (tag === "Німецька окупація") {
-                return `<img src="yellow_tag.png" title="Німецька окупація" width="60px" style="margin-left: -25px;">`
+                return `<img src="icons/yellow_tag.png" title="Німецька окупація" width="60px" style="margin-left: -25px;">`
             } else if (tag === "Дерусифікація") {
-                return `<img src="blue_tag.png" title="Дерусифікація" width="60px" style="margin-left: -25px;">`
+                return `<img src="icons/blue_tag.png" title="Дерусифікація" width="60px" style="margin-left: -25px;">`
             }
         });
 
@@ -225,13 +225,24 @@ function showWholeStreetAndInfoAbout(streetId) {
 
     const zoomCenter = {...selectedStreet.centerCoords};
 
-
     let zoom = 12;
+    if (map.getZoom() >= zoom) {
+        zoom = map.getZoom();
+    }
     if (selectedStreet.type && selectedStreet.type === "SQUARE") {
-        zoom = 13;
-        zoomCenter.lng -= 0.02 * window.innerWidth / 1500;
+        if (map.getZoom() >= zoom) {
+            zoom = map.getZoom();
+            zoomCenter.lng -= 0.02 * window.innerWidth / 1500 / zoom;
+        } else {
+            zoom = 13;
+            zoomCenter.lng -= 0.02 * window.innerWidth / 1500;
+        }
     } else {
-        zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+        if (map.getZoom() >= zoom) {
+            zoomCenter.lng -= 0.035 * window.innerWidth / 1500 / zoom;
+        } else {
+            zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+        }
     }
 
 
@@ -487,6 +498,10 @@ function filterByTags(tag) {
         showAllStreetsCenterMarker();
         addSuggestions();
     });
+}
+
+function formatLinks(text) {
+
 }
 
 filterStreetsType(document.getElementById('STREET'), "STREET");
