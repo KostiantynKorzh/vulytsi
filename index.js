@@ -192,11 +192,11 @@ function showWholeStreetAndInfoAbout(streetId) {
     if (selectedStreet.tags && selectedStreet.tags.length > 0) {
         const mappedTags = selectedStreet.tags.map(tag => {
             if (tag === "Декомунізація") {
-                return `<img src="red_tag.png" title="Декомунізація" width="60px" style="margin-left: -25px;">`
+                return `<img src="icons/red_tag.png" title="Декомунізація" width="60px" style="margin-left: -25px;">`
             } else if (tag === "Німецька окупація") {
-                return `<img src="yellow_tag.png" title="Німецька окупація" width="60px" style="margin-left: -25px;">`
+                return `<img src="icons/yellow_tag.png" title="Німецька окупація" width="60px" style="margin-left: -25px;">`
             } else if (tag === "Дерусифікація") {
-                return `<img src="blue_tag.png" title="Дерусифікація" width="60px" style="margin-left: -25px;">`
+                return `<img src="icons/blue_tag.png" title="Дерусифікація" width="60px" style="margin-left: -25px;">`
             }
         });
 

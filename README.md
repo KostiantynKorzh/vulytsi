@@ -1,10 +1,10 @@
 ## Код сайту [vulytsi.name](http://www.vulytsi.name), де зібрана інформація щодо сучасних та колишніх назв вулиць/площ міста Києва
 
-<img src="readme_example.png" width="600" alt="example">
+<img src="icons/readme_example.png" width="600" alt="example">
 
 Для кожної вулиці (як для сучасної назви так і для колишніх) є інформація на честь кого/чого вона названа. Присутній пошук за назвоб як сучасною, так и колишньою
 
-<img src="search_example.png" width="600" alt="search example">
+<img src="icons/search_example.png" width="600" alt="search example">
 
 Майбутні плани:
 - теги (декомунізація, дерусифікація...)
