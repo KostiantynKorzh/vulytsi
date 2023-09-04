@@ -5,7 +5,7 @@ mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN;
 const map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/mapbox/dark-v10',
-    center: [ 30.52428, 50.45056 ],
+    center: [30.52428, 50.45056],
     zoom: 10.5
 });
 
@@ -240,9 +240,12 @@ function showWholeStreetAndInfoAbout(streetId) {
     } else {
         if (map.getZoom() >= zoom) {
             zoomCenter.lng -= 0.035 * window.innerWidth / 1500 / zoom;
+            zoomCenter.lat -= 0.035 * window.innerHeight / 150 / zoom;
         } else {
             zoomCenter.lng -= 0.035 * window.innerWidth / 1500;
+            zoomCenter.lat -= 0.035 * window.innerHeight / 150 / zoom;
         }
+
     }
 
 
@@ -330,6 +333,20 @@ function showAllStreetsCenterMarker() {
         });
     }
 }
+
+const infoBox = document.getElementsByClassName('info-box')[0];
+
+function changeInfoboxHeight(y) {
+    const newHeight = window.innerHeight - y;
+    const relSize = (window.innerHeight - newHeight) / window.innerHeight;
+    if (relSize >= 0.2 && relSize <= 0.9) {
+        infoBox.style.height = newHeight + "px";
+    }
+}
+
+infoBox.addEventListener("touchmove", function (e) {
+    changeInfoboxHeight(e.changedTouches[0].clientY)
+}, false);
 
 function showAllStreets() {
     if (allStreets && allStreets.length > 0) {
